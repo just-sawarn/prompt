@@ -2,139 +2,174 @@
 
 ## Overall Score
 
-| Parameter | Score | Maximum |
+| Criterion | Score | Max |
 |---|---:|---:|
-| Prompt Clarity | 85 | 100 |
-| Output Quality & Schema Compliance | 51 | 100 |
-| Efficiency & Token Economy | 34 | 50 |
-| **Total** | **170** | **250** |
+| Prompt Clarity | 91 | 100 |
+| Output Quality & Schema Guidance | 89 | 100 |
+| Efficiency & Token Economy | 37 | 50 |
+| Total | 217 | 250 |
 
 ## Executive Summary
 
-The prompt gives a concrete Indian college-canteen scenario, a fixed one-week horizon, a defined seed budget, service-volume and peak-hour context, and a broad set of operational decisions to make. Its numbered task list and requested tables encourage useful coverage. The main weaknesses are missing financial and operating assumptions, limited controls against invented cost estimates, and no worked example to show the expected arithmetic and level of detail. The request to “think through the trade-offs step by step” should be replaced with a request for concise, checkable rationale.
+This prompt is highly structured and operationally strong. It gives a clear persona, exact deliverables, hard constraints, and a strict final format, which makes it well suited for precise planning tasks in a constrained environment.
+
+The main opportunity is reducing repetition and tightening the instruction density. A few sections repeat rules in different forms, and the prompt could benefit from a smaller, more explicit schema and a single concise decision hierarchy.
 
 ## Evaluated Prompt Analysis
 
-**Target:** `prompt.md`
-**Estimated length:** approximately 400 tokens (rough estimate; tokenizer-dependent).
-**Structure:** Role and scenario; six required planning areas; a five-part output specification; three hard constraints; final calculation/reasoning instruction.
-
-The prompt is intended to elicit a practical seven-day plan for a canteen serving roughly 300–500 students daily, with ₹10,000 of one-time seed capital. It asks for menu selection, allocation, pricing, daily quantities, demand handling, and contingency planning. Its central deliverable is strongly specified by section, but the calculations depend on local prices, current equipment and staff capacity, and the interpretation of how sales revenue may be used during the week. Those inputs are not provided or assigned an explicit assumption policy.
+- Prompt source: [prompt.md](prompt.md)
+- Estimated token count: ~620–760 tokens (approximate)
+- Structural overview: persona definition, context block, task requirements, negative constraints, tone guidance, fallback rules, factuality rules, output format contract, and verification checklist
+- Overall assessment: strong prompt for production-style output, but slightly verbose and partially redundant in the rule layer
 
 ## Detailed Parameter Breakdown
 
-### 1. Prompt Clarity: 85 / 100
+### 1) Prompt Clarity — 91 / 100
 
-| Criterion | Score | Evidence and rationale |
+| Sub-factor | Score | Notes |
 |---|---:|---|
-| Role & Persona Definition | 18 / 20 | “Experienced campus food-services consultant” and “turned around underperforming college canteens on tight budgets” establish relevant perspective and objective. Experience is asserted rather than operationally bounded, but the role is apt. |
-| Task Specificity & Negative Constraints | 22 / 25 | The six enumerated areas are concrete, and “not as a subsidy to give food away” is a useful boundary. The prompt does not specify whether the canteen's existing staff, equipment, suppliers, or starting inventory are available. |
-| Instruction Structure & Delimiters | 17 / 20 | `CONTEXT`, `TASK`, `OUTPUT FORMAT`, and `CONSTRAINTS` separate the major instructions cleanly. There are no explicit data slots or separation mechanism for assumptions versus user-provided facts. |
-| Tone, Style & Target Audience | 12 / 15 | Student affordability and the Indian college context imply the audience and practical tone. It does not expressly define response style, technical level, or whether estimates should be labeled. |
-| Unambiguous Language | 16 / 20 | “Exactly one week (7 days)” and the service periods are specific. “Every rupee must be accounted for” sits in tension with “must not exceed ₹10,000,” and “typical Indian college canteen menu” has no defined baseline. |
-| **Subtotal** | **85 / 100** | |
+| Role & Persona Definition | 19/20 | Strong persona and objective are explicit and credible. |
+| Task Specificity & Negative Constraints | 24/25 | The task sequence and non-negotiable rules are very clear. |
+| Instruction Structure & Delimiters | 18/20 | Good use of labeled blocks and explicit ordering. |
+| Tone, Style & Target Audience | 14/15 | Audience and consultant voice are clearly defined. |
+| Unambiguous Language | 16/20 | Mostly direct, but some constraints are repeated across several sections. |
 
-**Strengths**
+#### Strengths
 
-- “The canteen serves roughly 300–500 students daily, with peak rushes at breakfast (8–9 AM) and lunch (12–2 PM)” gives planning-relevant demand and timing context.
-- “The goal is to maximize student satisfaction and canteen revenue/sustainability within this single week” gives a clear, multi-objective purpose.
-- The numbered task list makes it difficult to overlook major operating decisions.
+- The prompt establishes a sharp role immediately: "You are a campus food-services strategy consultant with 10+ years turning around under-resourced college canteens in India."
+- The task is explicit and bounded: "Produce a complete one-week canteen improvement plan covering, in this exact order: ..."
+- Hard constraints are cleanly enforced: "Never propose spending beyond ₹{budget}; never leave any amount unallocated or unexplained"
+- The prompt defines the reader and the output style: "Write for a judge skimming quickly, not a general reader — lead every section with the number or decision, then the one-line reason."
 
-**Weaknesses**
+#### Weaknesses
 
-- “Typical Indian college canteen menu” leaves the baseline menu unspecified, so menu keep/drop decisions cannot be tied to known current sales or facilities.
-- “Every rupee must be accounted for” may be read as requiring exactly ₹10,000 expenditure, despite the separate upper-bound constraint.
-- Staff, equipment, storage, existing inventory, payment/ordering methods, and permission for sales receipts to fund replenishment are unspecified.
+- The same constraint theme is repeated across several blocks (budget, no guessing, no filler, no commentary, exact output order), which raises instruction load without adding new guidance.
+- The instruction set is long enough that a model may prioritize the most salient rules but not all of the repeated edge-case logic in the same way.
+- Some fallback logic is correct but slightly over-specified for a single prompt; it could be simplified into a single assumption rubric.
 
-### 2. Output Quality & Schema Compliance: 51 / 100
+### 2) Output Quality & Schema Guidance — 89 / 100
 
-| Criterion | Score | Evidence and rationale |
+| Sub-factor | Score | Notes |
 |---|---:|---|
-| Output Format & Schema Enforcement | 23 / 30 | The prompt requires an executive summary, budget table, seven-day menu/pricing table, 150–200-word demand section, and one key risk. It does not prescribe fields for quantities, daily budget reconciliation, unit costs, daily totals, or assumptions. |
-| Few-Shot Examples & Demonstrations | 0 / 25 | No example input/output or sample calculation is provided. |
-| Edge Cases & Fallback Instructions | 18 / 25 | It names a flop, raw-material price spike, and bad-weather footfall drop, and asks for stockout and overproduction controls. It does not explain what to do when costs or local facts are unavailable, or how to handle contradictory budget arithmetic. |
-| Factuality & Hallucination Prevention | 10 / 20 | “Show the math” supports auditability, but no instruction distinguishes supplied facts from estimates or prohibits presenting invented local prices as verified facts. |
-| **Subtotal** | **51 / 100** | |
+| Output Format & Schema Enforcement | 29/30 | Strong contract with exact order and table shapes. |
+| Few-Shot Examples | 18/25 | One example is provided, but more examples would improve consistency. |
+| Edge Cases & Fallback Instructions | 23/25 | Good assumptions and conflict-handling instructions. |
+| Factuality & Hallucination Prevention | 19/20 | Excellent guardrails against invented numbers and unsupported claims. |
 
-**Strengths**
+#### Strengths
 
-- The output requirements constrain the answer to usable artifacts, especially a “day-wise menu + pricing table for the 7 days.”
-- The plan must include both demand and inventory controls, not only a menu and spending proposal.
-- Naming representative risks points the model toward operational contingencies.
+- Output contract is excellent: "Return only the following, in Markdown, in this order — no preamble, no closing remarks:"
+- Verification instructions are strong: "Before finalizing, silently check: (1) Budget Allocation sums to ≤ ₹{budget}, ..."
+- Factuality is explicitly controlled: "Do not cite external sources, studies, or statistics you cannot verify from the given inputs."
+- The prompt gives concrete grammar and formatting expectations for both prose and tables, which is highly useful.
 
-**Weaknesses**
+#### Weaknesses
 
-- The budget table schema (`item | cost | category`) cannot by itself show assumptions, quantity/unit cost, timing, or a reconciled total.
-- No example demonstrates that quantities, revenue assumptions, or the budget should be internally consistent.
-- The prompt does not direct the model to label estimates, state assumptions, or avoid claiming unsupported local market prices.
-- Requiring one key risk underspecifies the three risk examples and could cause valid contingencies to be omitted.
+- There is no explicit example of a fully valid completions set beyond a few rows, which could improve the model's formatting reliability.
+- Some sections are still open to interpretation because the requested table content is a bit broad and could produce different valid stylings for the same business logic.
+- The prompt does not clearly define a decision hierarchy for when assumptions are needed versus when a section must say "Cannot determine {X} — required input missing"; this could be sharper.
 
-### 3. Efficiency & Token Economy: 34 / 50
+### 3) Efficiency & Token Economy — 37 / 50
 
-| Criterion | Score | Evidence and rationale |
+| Sub-factor | Score | Notes |
 |---|---:|---|
-| Conciseness & Fluff Elimination | 13 / 15 | The prompt is compact relative to the six requested workstreams. Some examples and repeated budget/constraint instructions could be consolidated. |
-| Token Economy & Context Footprint | 13 / 15 | Most details are decision-relevant. Repeating the budget limit and asking for the budget sum in multiple places adds modest duplication. |
-| Dynamic Parameterization | 0 / 10 | The single scenario is hard-coded; no reusable fields for location, budget, sales, existing menu, staffing, or operating hours are supplied. |
-| Signal-to-Noise Ratio | 8 / 10 | The headings and numbered tasks prioritize requirements effectively. “Think through the trade-offs step by step” is not needed for an auditable final answer and may encourage excessive reasoning text. |
-| **Subtotal** | **34 / 50** | |
+| Conciseness & Fluff Elimination | 12/15 | Mostly concise, but redundant constraints and repeated admonitions add length. |
+| Token Economy & Context Footprint | 11/15 | Dense and useful, but larger than necessary for the objective. |
+| Dynamic Parameterization | 7/10 | Placeholders are clear, but the repeated use of {budget}, {duration}, and {student_count} could be simplified into a single input block. |
+| Signal-to-Noise Ratio | 7/10 | High-value rules are present, but some repeated statements weaken the signal. |
+
+#### Strengths
+
+- The prompt removes filler effectively: "Never pad with filler (...) — start directly with content"
+- Every major directive is tied to the actual output contract, which keeps most instructions task-relevant.
+- The prompt compresses business logic and output constraints into a single defined job, which is efficient for a planning task.
+
+#### Weaknesses
+
+- There is repetition across the sections: negative constraints, factuality, tone, verification, and output format each reassert the same intent in slightly different wording.
+- The numbered requirement list plus the output contract plus the verification checklist create a heavier instruction stack than necessary.
+- Some lines are more like meta-policy than model behavior, which slightly increases context overhead without changing the final output quality.
 
 ## Actionable Recommendations
 
-1. Define what the ₹10,000 covers and clarify whether sales revenue may finance later purchases. State whether existing staff, equipment, inventory, and facilities are available; otherwise require explicit assumptions.
-2. Replace “every rupee must be accounted for” with a reconciliation rule: show planned allocations totaling no more than ₹10,000, identify any unspent reserve, and verify the sum.
-3. Expand the table schema to include daily quantities, selling price, estimated unit cost, expected sales/revenue, and daily and weekly totals. Mark estimates as assumptions rather than verified local data.
-4. Ask for concise decision rationale and visible calculations, not hidden step-by-step reasoning.
-5. Require fallback behavior for unknown or missing local data, and give a compact example of a correctly reconciled budget row or total.
-6. Cover each named risk briefly, or explicitly request one prioritized risk plus short mitigations for the others.
-7. Parameterize the context if the prompt is intended for reuse across canteens; otherwise retain the fixed scenario and identify which values are estimates.
+1. Consolidate overlapping rules into a single "Hard Rules" section and remove repeated admonitions across later blocks.
+2. Add a compact example output table demonstrating one valid row and one valid section-style response to reduce formatting drift.
+3. Define a single assumption policy in one sentence: "When a value is missing, use the minimum justified assumption and label it clearly as an assumption."
+4. Reduce meta-commentary and keep the verification checklist limited to the exact checks that materially affect correctness.
+5. Streamline the prompt by consolidating context, task, and output structure into a clearer XML-like block layout such as `<role>`, `<inputs>`, `<required_output>`, and `<rules>`.
 
-## Optimized Prompt Rewrite (Production-Ready)
+## Optimized Prompt Rewrite
 
 ```text
 <role>
-You are a practical campus food-services consultant. Create a low-cost, operationally realistic plan that improves student satisfaction and supports canteen revenue without giving food away.
+You are a campus food-services strategy consultant with 10+ years of experience improving under-resourced college canteens in India. Your job is to produce a financially sound, immediately executable one-week canteen plan for a student canteen operating in a constrained-budget environment.
 </role>
 
-<scenario>
-- Location/context: Indian college canteen; use ₹ and student-budget pricing.
-- Planning period: 7 consecutive days.
-- One-time seed budget: maximum ₹10,000 for changes and operating inputs during this week.
-- Demand: approximately 300–500 students per day; breakfast peak 8–9 AM; lunch peak 12–2 PM.
-- Existing menu examples: samosa, poha, sandwiches, Maggi, thali, cold drinks. Treat these as examples, not confirmed current offerings.
-- No funding beyond the stated seed budget. Do not assume revenue can fund later purchases unless you state that assumption; distinguish seed spending from any revenue-funded replenishment.
-</scenario>
+<inputs>
+- Budget: ₹{budget}
+- Duration: {duration} (must be exactly 7 operating days)
+- Daily footfall: {student_count} students
+- Peak windows: breakfast 08:00–09:00 and lunch 12:00–14:00
+- Baseline menu reference: standard Indian college canteen items (samosa, poha, sandwiches, maggi, thali, tea/coffee, cold drinks)
+</inputs>
 
 <task>
-Design a complete seven-day improvement plan. Make operational recommendations for:
-1. Menu: items to keep, add, or drop, with concise reasons based on affordability, likely demand, ingredient cost, and preparation complexity.
-2. Budget: allocate the seed budget among ingredients, small equipment/utensils, signage, staff incentives, and contingency as appropriate.
-3. Pricing: set realistic student-facing prices and explain the cost, affordability, and margin trade-offs; include any combo prices.
-4. Inventory: give estimated daily preparation quantities per item and a simple reorder/stop-prep rule to limit stockouts and waste.
-5. Demand: address both stated peak periods and slower hours/days using workable service or promotion changes.
-6. Risks: name the most important risk and mitigation; briefly cover a weak-selling item, input-cost increase, and lower footfall if not already covered.
+Create a complete one-week canteen improvement plan using the exact structure below, in this order:
+1. Menu decisions — kept/added/dropped items with justification by cost, popularity, and prep complexity
+2. Budget allocation — every rupee of ₹{budget} assigned to a category
+3. Pricing strategy — per-item price and the pricing logic used
+4. Quantity and inventory plan — daily prep quantities sized against stockout and wastage risk
+5. Demand management — actions to handle peak-hour load and smooth week-long demand
+6. Risk and contingency — one realistic failure mode and one mitigation
 </task>
 
-<assumptions_and_accuracy>
-Do not present unknown local prices, sales, margins, or facilities as verified facts. If needed, state a short list of reasonable planning assumptions and label all estimates. If a required input is unavailable, proceed with a clearly labeled assumption rather than inventing a source. Show concise calculations and conclusions; do not provide private chain-of-thought.
-</assumptions_and_accuracy>
+<hard_rules>
+- Do not exceed ₹{budget}; every rupee must be allocated or explicitly explained.
+- Do not invent precise historical data; use assumptions only when required and label them clearly.
+- Use specific numeric values for every price, cost, and quantity. No ranges, placeholders, or vague phrases.
+- Do not add commentary outside the six required sections.
+- Do not use filler phrases such as "Great question," "I would be happy to," or "In conclusion."
+- Start each section directly with the result or decision.
+- Base all figures only on the provided inputs and standard 2026 Indian market pricing for common canteen ingredients.
+- If an input is missing or conflicting, state the single most realistic assumption under an "Assumptions" heading; if no reasonable assumption exists, state: "Cannot determine {X} — required input missing."
+</hard_rules>
 
-<output_format>
-Return the sections in this order:
-1. Executive summary: 2–3 lines.
-2. Assumptions: concise bullets, including starting equipment/staff and whether sales revenue can be reused.
-3. Budget table with columns: item/use | quantity or basis | cost (₹) | category. Show the arithmetic and a total. Total planned seed spending must be ≤ ₹10,000; identify any unspent balance as reserve, not as spent money.
-4. Seven-day menu and operations table with columns: day | item | prep quantity | estimated unit cost (₹) | selling price (₹) | brief rationale or service note. Include daily totals or a separate compact daily summary.
-5. Pricing and inventory rules: concise explanation of price logic, replenishment, stockout response, and waste reduction.
-6. Demand management: 150–200 words, covering the breakfast/lunch peaks and quieter periods.
-7. Risks: one prioritized risk with mitigation, plus brief responses to the other named scenarios.
-8. Validation: state the budget sum and confirm it does not exceed ₹10,000. Keep any sales/revenue projection separate from the seed-budget spending total.
-</output_format>
+<tone>
+Direct, professional, consultant-to-client. Use concise, executive language for a judge who will skim the output in about 2 minutes.
+</tone>
 
-<constraints>
-- Do not exceed the ₹10,000 seed budget or assume additional funding.
-- Keep prices plausible for an Indian student canteen and identify them as estimates where local data is unavailable.
-- Ensure quantities, unit costs, totals, and prices are internally consistent. If exact precision is unsupported, use rounded estimates and disclose the basis.
-- Keep the plan actionable for a one-week trial; avoid buying durable equipment unless its use during this week is justified.
-</constraints>
-```
+<required_output>
+Return only the following in Markdown, in this exact order:
+
+## Assumptions
+- Bullet list only if assumptions were needed.
+
+## Executive Summary
+2–3 sentences stating the core strategy.
+
+## Budget Allocation
+| Category | Item | Cost (₹) |
+|---|---|---|
+...
+| **Total** | | **≤ ₹{budget}** |
+
+## 7-Day Menu & Pricing
+| Day | Item | Price (₹) | Qty Prepared |
+|---|---|---|---|
+...
+
+## Demand Management
+150–200 words, plain prose.
+
+## Risk & Mitigation
+One risk, one mitigation, 2–3 sentences total.
+</required_output>
+
+<verification>
+Before finalizing, silently verify:
+1. Total budget allocation is ≤ ₹{budget}
+2. Every price is realistic for student affordability and falls in the ₹10–60 range
+3. Every table cell contains a specific numeric value, never a placeholder or range
+4. The structure matches the required ordering exactly
+</verification>
+</content>
