@@ -1,157 +1,141 @@
 # Prompt Evaluation Report
 
-## Overall Score
+## Overall Score Table
 
-| Criterion | Score | Max |
-|---|---:|---:|
-| Prompt Clarity | 91 | 100 |
-| Output Quality & Schema Guidance | 89 | 100 |
-| Efficiency & Token Economy | 37 | 50 |
-| Total | 217 | 250 |
+| Criterion | Score | Max | Verdict |
+|---|---:|---:|---|
+| Prompt Clarity | 84 | 100 | Strong structure, but a few redundant guardrails and nested rules add friction |
+| Output Quality & Schema Guidance | 88 | 100 | Clear, executable output contract with very good factual guardrails |
+| Efficiency & Token Economy | 39 | 50 | Good density, but repetitive rules increase token cost |
+| Total | 211 | 250 | Strong prompt with room for tighter wording |
 
 ## Executive Summary
 
-This prompt is highly structured and operationally strong. It gives a clear persona, exact deliverables, hard constraints, and a strict final format, which makes it well suited for precise planning tasks in a constrained environment.
+This prompt is strong in role definition, task specificity, and operational guardrails. It gives a clear objective, enforces a disciplined format, and explicitly limits the model from inventing unsupported data or overexplaining.
 
-The main opportunity is reducing repetition and tightening the instruction density. A few sections repeat rules in different forms, and the prompt could benefit from a smaller, more explicit schema and a single concise decision hierarchy.
+The main opportunities are around repetition and token efficiency. Several rules are stated multiple times in slightly different forms, which makes the prompt longer than necessary without meaningfully improving output quality. A tighter rewrite with one consolidated rules block and a small example schema would raise consistency while reducing noise.
 
 ## Evaluated Prompt Analysis
 
-- Prompt source: [prompt.md](prompt.md)
-- Estimated token count: ~620–760 tokens (approximate)
-- Structural overview: persona definition, context block, task requirements, negative constraints, tone guidance, fallback rules, factuality rules, output format contract, and verification checklist
-- Overall assessment: strong prompt for production-style output, but slightly verbose and partially redundant in the rule layer
+- Prompt type: structured operational system prompt
+- Estimated size: approximately 750–800 tokens
+- Structural flow: role -> context -> task -> negative constraints -> tone -> fallback instructions -> factuality -> output format -> verification
+- Overall assessment: strong, production-ready prompt with a clear decision-making objective and consistent output requirements
+
+### Representative excerpts
+
+- Strength: “Your objective: produce a financially sound, immediately executable one-week canteen plan — not a brainstorm.”
+- Strength: “Never invent precise data not given … state assumptions explicitly instead.”
+- Strength: “Return only the following, in Markdown, in this order — no preamble, no closing remarks:”
+- Weakness: multiple repeated prohibitions such as “Never pad with filler…”, “Never restate these instructions…”, and “Never use vague qualifiers…” are useful, but they are spread across multiple blocks instead of consolidated.
 
 ## Detailed Parameter Breakdown
 
-### 1) Prompt Clarity — 91 / 100
+### 1) Prompt Clarity — 84/100
 
-| Sub-factor | Score | Notes |
-|---|---:|---|
-| Role & Persona Definition | 19/20 | Strong persona and objective are explicit and credible. |
-| Task Specificity & Negative Constraints | 24/25 | The task sequence and non-negotiable rules are very clear. |
-| Instruction Structure & Delimiters | 18/20 | Good use of labeled blocks and explicit ordering. |
-| Tone, Style & Target Audience | 14/15 | Audience and consultant voice are clearly defined. |
-| Unambiguous Language | 16/20 | Mostly direct, but some constraints are repeated across several sections. |
-
-#### Strengths
-
-- The prompt establishes a sharp role immediately: "You are a campus food-services strategy consultant with 10+ years turning around under-resourced college canteens in India."
-- The task is explicit and bounded: "Produce a complete one-week canteen improvement plan covering, in this exact order: ..."
-- Hard constraints are cleanly enforced: "Never propose spending beyond ₹{budget}; never leave any amount unallocated or unexplained"
-- The prompt defines the reader and the output style: "Write for a judge skimming quickly, not a general reader — lead every section with the number or decision, then the one-line reason."
-
-#### Weaknesses
-
-- The same constraint theme is repeated across several blocks (budget, no guessing, no filler, no commentary, exact output order), which raises instruction load without adding new guidance.
-- The instruction set is long enough that a model may prioritize the most salient rules but not all of the repeated edge-case logic in the same way.
-- Some fallback logic is correct but slightly over-specified for a single prompt; it could be simplified into a single assumption rubric.
-
-### 2) Output Quality & Schema Guidance — 89 / 100
-
-| Sub-factor | Score | Notes |
-|---|---:|---|
-| Output Format & Schema Enforcement | 29/30 | Strong contract with exact order and table shapes. |
-| Few-Shot Examples | 18/25 | One example is provided, but more examples would improve consistency. |
-| Edge Cases & Fallback Instructions | 23/25 | Good assumptions and conflict-handling instructions. |
-| Factuality & Hallucination Prevention | 19/20 | Excellent guardrails against invented numbers and unsupported claims. |
+Component breakdown:
+- Role & persona definition: 18/20
+- Task specificity & negative constraints: 22/25
+- Instruction structure & delimiters: 18/20
+- Tone and audience alignment: 13/15
+- Unambiguous language: 13/20
 
 #### Strengths
 
-- Output contract is excellent: "Return only the following, in Markdown, in this order — no preamble, no closing remarks:"
-- Verification instructions are strong: "Before finalizing, silently check: (1) Budget Allocation sums to ≤ ₹{budget}, ..."
-- Factuality is explicitly controlled: "Do not cite external sources, studies, or statistics you cannot verify from the given inputs."
-- The prompt gives concrete grammar and formatting expectations for both prose and tables, which is highly useful.
+- The role is sharply defined: “You are a campus food-services strategy consultant with 10+ years turning around under-resourced college canteens in India.” This immediately anchors the model’s point of view.
+- The deliverable is concrete and bounded: “Produce a complete one-week canteen improvement plan covering, in this exact order…”
+- The negative constraints are explicit and operational: “Never propose spending beyond ₹{budget}; never leave any amount unallocated or unexplained.”
+- The prompt tells the model exactly how to write and how not to write: “Direct, professional, consultant-to-client… Write for a judge skimming quickly…”
 
 #### Weaknesses
 
-- There is no explicit example of a fully valid completions set beyond a few rows, which could improve the model's formatting reliability.
-- Some sections are still open to interpretation because the requested table content is a bit broad and could produce different valid stylings for the same business logic.
-- The prompt does not clearly define a decision hierarchy for when assumptions are needed versus when a section must say "Cannot determine {X} — required input missing"; this could be sharper.
+- The prompt repeats critical prohibitions across several sections rather than centralizing them. For example, the “negative_constraints,” “tone,” and “output_format” blocks all restate varied versions of the same guardrails.
+- Some instructions are highly useful but can be simplified. The “fallback_instructions” section is well designed, but its logic is spread across multiple branches that may slow comprehension in a long prompt.
+- The “verification” block is excellent, but it is buried near the end; this instruction would be stronger near the hard-rules section, where a model is more likely to apply it before outputting.
 
-### 3) Efficiency & Token Economy — 37 / 50
+### 2) Output Quality & Schema Guidance — 88/100
 
-| Sub-factor | Score | Notes |
-|---|---:|---|
-| Conciseness & Fluff Elimination | 12/15 | Mostly concise, but redundant constraints and repeated admonitions add length. |
-| Token Economy & Context Footprint | 11/15 | Dense and useful, but larger than necessary for the objective. |
-| Dynamic Parameterization | 7/10 | Placeholders are clear, but the repeated use of {budget}, {duration}, and {student_count} could be simplified into a single input block. |
-| Signal-to-Noise Ratio | 7/10 | High-value rules are present, but some repeated statements weaken the signal. |
+Component breakdown:
+- Output format & schema enforcement: 28/30
+- Few-shot examples: 18/25
+- Edge cases & fallback instructions: 24/25
+- Factuality & hallucination prevention: 18/20
 
 #### Strengths
 
-- The prompt removes filler effectively: "Never pad with filler (...) — start directly with content"
-- Every major directive is tied to the actual output contract, which keeps most instructions task-relevant.
-- The prompt compresses business logic and output constraints into a single defined job, which is efficient for a planning task.
+- The output contract is precise: it prescribes exact headings and table layouts, which strongly reduces formatting drift.
+- The requirement “every table cell holds a specific number” is a valuable anti-hallucination control and makes the answer easier to evaluate.
+- The fallback logic is robust: “If the challenge statement omits a needed detail… add one bullet under an ‘Assumptions’ heading…”
+- The factuality section tightly guards against unsupported claims: “Base all figures only on {budget}, {duration}, {student_count}, and standard Indian market prices…”
 
 #### Weaknesses
 
-- There is repetition across the sections: negative constraints, factuality, tone, verification, and output format each reassert the same intent in slightly different wording.
-- The numbered requirement list plus the output contract plus the verification checklist create a heavier instruction stack than necessary.
-- Some lines are more like meta-policy than model behavior, which slightly increases context overhead without changing the final output quality.
+- There is no compact example row to show the expected schema in practice. The “example” block helps, but it is minimal and not integrated as a direct in-context demonstration.
+- The model may still overfit to formatting and underdeliver on strategic depth because the task is highly formulaic; a single exemplar row or a more explicit table schema would reduce variance.
+- The prompt says “Write for a judge skimming quickly” but does not explicitly define what a winning judge expects in the answer; a short list of “what makes a strong answer” would further standardize quality.
+
+### 3) Efficiency & Token Economy — 39/50
+
+Component breakdown:
+- Conciseness & fluff elimination: 12/15
+- Token economy & context footprint: 10/15
+- Dynamic parameterization: 9/10
+- Signal-to-noise ratio: 8/10
+
+#### Strengths
+
+- It uses high-value placeholders and a small number of variables, which is efficient and maintainable.
+- The prompt is dense with actionable constraints rather than generic coaching language.
+- The structure is logically ordered: objective, constraints, output, verification.
+
+#### Weaknesses
+
+- A significant amount of space is consumed by repeated negative rules. The same concept appears in multiple sections, which increases token count without adding unique guidance.
+- The prompt includes long paragraphs for fallback logic that could be compressed into a tighter, unified rule block.
+- Some instructions are more complex than necessary for a task that is already strongly structured.
 
 ## Actionable Recommendations
 
-1. Consolidate overlapping rules into a single "Hard Rules" section and remove repeated admonitions across later blocks.
-2. Add a compact example output table demonstrating one valid row and one valid section-style response to reduce formatting drift.
-3. Define a single assumption policy in one sentence: "When a value is missing, use the minimum justified assumption and label it clearly as an assumption."
-4. Reduce meta-commentary and keep the verification checklist limited to the exact checks that materially affect correctness.
-5. Streamline the prompt by consolidating context, task, and output structure into a clearer XML-like block layout such as `<role>`, `<inputs>`, `<required_output>`, and `<rules>`.
+1. Consolidate repeated prohibitions into one short “Hard rules” block instead of scattering them through several sections.
+2. Add one compact sample row for each required table to anchor schema expectations without writing a full example answer.
+3. Move the verification rule closer to the top of the prompt so the model checks its output before finalizing.
+4. Reduce nested conditional wording in fallback rules by expressing them as a single prioritized decision path.
+5. Keep the role, objective, and output contract, but compress broader explanation into a tighter operational brief.
 
 ## Optimized Prompt Rewrite
 
 ```text
 <role>
-You are a campus food-services strategy consultant with 10+ years of experience improving under-resourced college canteens in India. Your job is to produce a financially sound, immediately executable one-week canteen plan for a student canteen operating in a constrained-budget environment.
+You are a campus food-services strategy consultant with 10+ years of experience turning around under-resourced college canteens in India. Your job is to produce a financially sound, immediately executable one-week canteen plan for a student-facing campus canteen.
 </role>
 
-<inputs>
+<context>
 - Budget: ₹{budget}
-- Duration: {duration} (must be exactly 7 operating days)
+- Duration: {duration} (exactly 7 operating days)
 - Daily footfall: {student_count} students
-- Peak windows: breakfast 08:00–09:00 and lunch 12:00–14:00
-- Baseline menu reference: standard Indian college canteen items (samosa, poha, sandwiches, maggi, thali, tea/coffee, cold drinks)
-</inputs>
+- Peak windows: breakfast 08:00–09:00; lunch 12:00–14:00
+- Baseline menu reference: samosa, poha, sandwiches, maggi, thali, tea/coffee, cold drinks
+</context>
 
-<task>
-Create a complete one-week canteen improvement plan using the exact structure below, in this order:
-1. Menu decisions — kept/added/dropped items with justification by cost, popularity, and prep complexity
-2. Budget allocation — every rupee of ₹{budget} assigned to a category
-3. Pricing strategy — per-item price and the pricing logic used
-4. Quantity and inventory plan — daily prep quantities sized against stockout and wastage risk
-5. Demand management — actions to handle peak-hour load and smooth week-long demand
-6. Risk and contingency — one realistic failure mode and one mitigation
-</task>
-
-<hard_rules>
-- Do not exceed ₹{budget}; every rupee must be allocated or explicitly explained.
-- Do not invent precise historical data; use assumptions only when required and label them clearly.
-- Use specific numeric values for every price, cost, and quantity. No ranges, placeholders, or vague phrases.
-- Do not add commentary outside the six required sections.
-- Do not use filler phrases such as "Great question," "I would be happy to," or "In conclusion."
-- Start each section directly with the result or decision.
-- Base all figures only on the provided inputs and standard 2026 Indian market pricing for common canteen ingredients.
-- If an input is missing or conflicting, state the single most realistic assumption under an "Assumptions" heading; if no reasonable assumption exists, state: "Cannot determine {X} — required input missing."
-</hard_rules>
-
-<tone>
-Direct, professional, consultant-to-client. Use concise, executive language for a judge who will skim the output in about 2 minutes.
-</tone>
+<objective>
+Create a single week plan that is operationally realistic, budget-compliant, and easy to score in a rapid judge review. Do not brainstorm; produce a decision-ready plan.
+</objective>
 
 <required_output>
-Return only the following in Markdown, in this exact order:
+Return only the following Markdown sections in this exact order, with no preamble and no closing remarks:
 
 ## Assumptions
-- Bullet list only if assumptions were needed.
+- Add a bullet only when a required detail is missing or a constraint conflicts.
+- If a value is an estimate, label it as (est.).
 
 ## Executive Summary
-2–3 sentences stating the core strategy.
+2–3 sentences describing the core strategy.
 
 ## Budget Allocation
 | Category | Item | Cost (₹) |
 |---|---|---|
-...
-| **Total** | | **≤ ₹{budget}** |
+... 
+| **Total** | | **≤ {budget}** |
 
 ## 7-Day Menu & Pricing
 | Day | Item | Price (₹) | Qty Prepared |
@@ -159,17 +143,40 @@ Return only the following in Markdown, in this exact order:
 ...
 
 ## Demand Management
-150–200 words, plain prose.
+150–200 words in plain prose.
 
 ## Risk & Mitigation
 One risk, one mitigation, 2–3 sentences total.
 </required_output>
 
-<verification>
-Before finalizing, silently verify:
-1. Total budget allocation is ≤ ₹{budget}
-2. Every price is realistic for student affordability and falls in the ₹10–60 range
-3. Every table cell contains a specific numeric value, never a placeholder or range
-4. The structure matches the required ordering exactly
-</verification>
-</content>
+<hard_rules>
+- Never exceed ₹{budget} total.
+- Allocate every rupee; no unassigned or unexplained amounts.
+- Do not invent precise historical data. If a number is estimated, label it (est.).
+- Use specific numbers only; no vague language such as “some,” “reasonable,” “good,” “around,” or “a lot.”
+- All prices must be in a realistic student-affordable range: ₹10–₹60.
+- If required data is missing and no reasonable assumption exists, state: “Cannot determine {X} — required input missing.”
+- If two constraints conflict, state the conflict in Assumptions and resolve it by scaling portions or pricing, not by ignoring the conflict.
+- Do not restate instructions or add commentary outside the six required sections.
+- Ensure every table cell contains a specific number or literal value; no placeholders or ranges.
+- Before finalizing, silently verify: total budget allocation ≤ ₹{budget}; all prices in range; no placeholders remain.
+</hard_rules>
+
+<tone>
+Direct, professional, consultant-to-client. Lead each section with the number or decision, then the one-line reason.
+</tone>
+
+<factuality>
+Base all figures only on {budget}, {duration}, {student_count}, and standard Indian market prices for common canteen ingredients as of 2026. Do not cite external sources or statistics you cannot verify from the given inputs.
+</factuality>
+
+<examples>
+Example table rows only:
+| Ingredients | Poha (5kg/day × 7) | 2,450 |
+| Mon | Poha | 20 | 80 plates |
+</examples>
+``` 
+
+## Summary
+
+This prompt is strong and operationally useful. It already contains the right elements for a disciplined, judge-friendly output, and it would benefit from a tighter rule block and one small schema example. The reported score is 211/250, which reflects a prompt that is close to production-ready but still slightly over-specified in ways that reduce efficiency.
